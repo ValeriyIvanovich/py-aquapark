@@ -53,9 +53,11 @@ class SlideLimitationValidator(ABC):
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
     def __init__(self) -> None:
-        self.age = IntegerRange(4, 14)
-        self.height = IntegerRange(80, 120)
-        self.weight = IntegerRange(20, 50)
+        super().__init__(
+            age=IntegerRange(4, 14),
+            height=IntegerRange(80, 120),
+            weight=IntegerRange(20, 50)
+        )
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
@@ -71,19 +73,18 @@ class Slide:
     def __init__(
             self,
             name: str,
-            limitation_class: SlideLimitationValidator
+            limitation_class: type[SlideLimitationValidator]
     ) -> None:
-        self.name = name
-        self.limitation_class = limitation_class()
+        self.limitation_validator = limitation_class()
 
     def can_access(self, visitor: Visitor) -> bool:
         if not isinstance(visitor, Visitor):
             raise TypeError("Visitor must be an instance of Visitor class.")
         return all([
-            self.limitation_class.age.min_amount
-            <= visitor.age <= self.limitation_class.age.max_amount,
-            self.limitation_class.height.min_amount
-            <= visitor.height <= self.limitation_class.height.max_amount,
-            self.limitation_class.weight.min_amount
-            <= visitor.weight <= self.limitation_class.weight.max_amount
+            self.limitation_validator.age.min_amount
+            <= visitor.age <= self.limitation_validator.age.max_amount,
+            self.limitation_validator.height.min_amount
+            <= visitor.height <= self.limitation_validator.height.max_amount,
+            self.limitation_validator.weight.min_amount
+            <= visitor.weight <= self.limitation_validator.weight.max_amount
         ])
