@@ -16,7 +16,8 @@ class IntegerRange:
 
     def __set__(self, instance: dict, value: int) -> None:
         if not (self.min_amount <= value <= self.max_amount):
-            raise ValueError
+            raise ValueError(f"Value {value} out of "
+                             f"range[{self.min_amount}, {self.max_amount}]")
         setattr(instance, self.protected_name, value)
 
 
@@ -35,11 +36,12 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
-    def __init__(self,
-                 age: int,
-                 weight: int,
-                 height: int
-                 ) -> None:
+    def __init__(
+            self,
+            age: int,
+            weight: int,
+            height: int
+    ) -> None:
         self.age = age
         self.weight = weight
         self.height = height
