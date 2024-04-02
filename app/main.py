@@ -17,11 +17,11 @@ class IntegerRange:
 
     def __set__(self, obj: SlideLimitationValidator, value: Any) -> None:
         if not isinstance(value, int):
-            raise TypeError("Type Error")
-        if self.min_amount <= value <= self.max_amount:
-            setattr(obj, self.protected_name, value)
-            return
-        raise ValueError("Value Error")
+            raise TypeError(f"{value} is not integer!")
+        if not self.min_amount <= value <= self.max_amount:
+            raise ValueError(f"{value} is out of range from "
+                             f"{self.min_amount} to {self.max_amount}")
+        setattr(obj, self.protected_name, value)
 
     def __set_name__(self, owner: SlideLimitationValidator, name: str) -> None:
         self.protected_name = "_" + name
@@ -76,5 +76,7 @@ class Slide:
                 visitor.age, visitor.weight, visitor.height
             )
             return True
-        except ValueError or TypeError:
+        except ValueError:
+            return False
+        except TypeError:
             return False
