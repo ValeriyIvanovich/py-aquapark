@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Callable
 
 
 class IntegerRange:
@@ -7,17 +7,17 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __get__(self, instance: dict, owner: Any) -> int:
+    def __get__(self, instance: object, owner: type) -> int:
         return instance.__dict__[self.name]
 
-    def __set__(self, instance: dict, value: int) -> None:
+    def __set__(self, instance: object, value: int) -> None:
         if not (self.min_amount <= value <= self.max_amount):
             raise ValueError(f"Value must be "
                              f"between {self.min_amount} "
                              f"and {self.max_amount}")
         instance.__dict__[self.name] = value
 
-    def __set_name__(self, owner: Any, name: Any) -> None:
+    def __set_name__(self, owner: type, name: str) -> None:
         self.name = name
 
 
@@ -40,7 +40,7 @@ class SlideLimitationValidator(ABC):
         self.height = height
 
     @abstractmethod
-    def can_access(self, visitor: Any) -> None:
+    def can_access(self, visitor: Visitor) -> bool:
         pass
 
 
@@ -51,7 +51,7 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
                          height=IntegerRange(80, 120)
                          )
 
-    def can_access(self, visitor: Any) -> bool:
+    def can_access(self, visitor: Visitor) -> bool:
         return (
             self.age.min_amount <= visitor.age
             <= self.age.max_amount
@@ -68,7 +68,7 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
                          weight=IntegerRange(50, 120),
                          height=IntegerRange(120, 220))
 
-    def can_access(self, visitor: Any) -> bool:
+    def can_access(self, visitor: Visitor) -> bool:
         return (
             self.age.min_amount
             <= visitor.age <= self.age.max_amount
@@ -82,9 +82,10 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 
 class Slide:
-    def __init__(self, name: Any, limitation_class: Any) -> None:
+    def __init__(self, name: str,
+                 limitation_class: Callable) -> None:
         self.name = name
         self.limitation = limitation_class()
 
-    def can_access(self, visitor: Any) -> Any:
+    def can_access(self, visitor: Visitor) -> bool:
         return self.limitation.can_access(visitor)
