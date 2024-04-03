@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from abc import ABC
+from typing import Any, Type
 
 
 class IntegerRange:
@@ -54,10 +54,6 @@ class SlideLimitationValidator(ABC):
         self.weight = weight
         self.height = height
 
-    @abstractmethod
-    def validate(self, visitor: object) -> None:
-        pass
-
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
 
@@ -66,15 +62,6 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
             age=IntegerRange(4, 14),
             weight=IntegerRange(20, 50),
             height=IntegerRange(80, 120)
-        )
-
-    def validate(self, visitor: object) -> bool:
-        return (
-            self.age.min_amount <= visitor.age <= self.age.max_amount
-            and self.weight.min_amount <= visitor.weight
-            <= self.weight.max_amount
-            and self.height.min_amount <= visitor.height
-            <= self.height.max_amount
         )
 
 
@@ -87,20 +74,26 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
             height=IntegerRange(120, 220)
         )
 
-    def validate(self, visitor: object) -> bool:
-        return (
-            self.age.min_amount <= visitor.age <= self.age.max_amount
-            and self.weight.min_amount <= visitor.weight
-            <= self.weight.max_amount
-            and self.height.min_amount <= visitor.height
-            <= self.height.max_amount
-        )
-
 
 class Slide:
-    def __init__(self, name: str, limitation_class: object) -> None:
+    def __init__(
+            self,
+            name: str,
+            limitation_class: Type[SlideLimitationValidator]
+    ) -> None:
         self.name = name
-        self.limitation_validator = limitation_class()
+        self.limitation_class = limitation_class()
 
-    def can_access(self, visitor: object) -> bool:
-        return self.limitation_validator.validate(visitor)
+    def can_access(self, visitor: Visitor) -> bool:
+        try:
+            limitation_validator = self.limitation_class
+            return all([
+                limitation_validator.age.min_amount <= visitor.age
+                <= limitation_validator.age.max_amount,
+                limitation_validator.weight.min_amount <= visitor.weight
+                <= limitation_validator.weight.max_amount,
+                limitation_validator.height.min_amount <= visitor.height
+                <= limitation_validator.height.max_amount
+            ])
+        except ValueError:
+            return False
