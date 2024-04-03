@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Any
 
 
 class IntegerRange:
@@ -83,7 +83,7 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 class Slide:
     def __init__(self, name: str,
-                 limitation_class: Callable) -> None:
+                 limitation_class: type[SlideLimitationValidator]) -> None:
         self.name = name
         self.limitation = limitation_class()
 
