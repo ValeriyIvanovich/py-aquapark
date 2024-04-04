@@ -14,10 +14,10 @@ class IntegerRange:
             raise ValueError(
                 f"Value must be between {self.min_amount} "
                 f"and {self.max_amount}")
-        setattr(instance, self.name, value)
+        setattr(instance, self.protected_name, value)
 
     def __set_name__(self, owner: type, name: str) -> None:
-        self.name = name
+        self.protected_name = "_" + name
 
 
 class Visitor:
@@ -62,18 +62,9 @@ class Slide:
     def can_access(self, visitor: Visitor) -> bool:
         if isinstance(visitor, Visitor):
             try:
-                limitation = self.limitation_class
-                age_check = (limitation.age.min_amount
-                             <= visitor.age
-                             <= limitation.age.max_amount)
-                height_check = (limitation.height.min_amount
-                                <= visitor.height
-                                <= limitation.height.max_amount)
-                weight_check = (limitation.weight.min_amount
-                                <= visitor.weight
-                                <= limitation.weight.max_amount)
-                if age_check and height_check and weight_check:
-                    return True
-            except AttributeError as e:
-                print(f"Error: {e}")
-        return False
+                self.limitation_class(visitor.age,
+                                      visitor.weight,
+                                      visitor.height)
+                return True
+            except ValueError:
+                return False
