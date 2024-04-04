@@ -61,12 +61,19 @@ class Slide:
 
     def can_access(self, visitor: Visitor) -> bool:
         if isinstance(visitor, Visitor):
-            limitation = self.limitation_class
-            if (limitation.age.min_amount <= visitor.age
-                    <= limitation.age.max_amount
-                    and limitation.height.min_amount
-                    <= visitor.height <= limitation.height.max_amount
-                    and limitation.weight.min_amount
-                    <= visitor.weight <= limitation.weight.max_amount):
-                return True
+            try:
+                limitation = self.limitation_class
+                age_check = (limitation.age.min_amount
+                             <= visitor.age
+                             <= limitation.age.max_amount)
+                height_check = (limitation.height.min_amount
+                                <= visitor.height
+                                <= limitation.height.max_amount)
+                weight_check = (limitation.weight.min_amount
+                                <= visitor.weight
+                                <= limitation.weight.max_amount)
+                if age_check and height_check and weight_check:
+                    return True
+            except AttributeError as e:
+                print(f"Error: {e}")
         return False
