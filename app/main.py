@@ -16,10 +16,8 @@ class IntegerRange:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance, value): # noqa
-        if self.min_amount <= value <= self.max_amount:
-            setattr(instance, self.protected_name, True)
-        else:
-            setattr(instance, self.protected_name, False)
+        check = self.min_amount <= value <= self.max_amount
+        setattr(instance, self.protected_name, True if check else False)
 
 
 class Visitor:
