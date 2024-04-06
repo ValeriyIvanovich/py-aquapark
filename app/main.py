@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 from abc import ABC
 
 
@@ -8,13 +9,17 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner, name: str) -> None: # noqa
+    def __set_name__(self, owner: Any, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance, owner) -> int: # noqa
+    def __get__(self,
+                instance: type[SlideLimitationValidator],
+                owner: Any) -> int:
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance, value): # noqa
+    def __set__(self,
+                instance: type[SlideLimitationValidator],
+                value: int) -> None:
         if isinstance(value, int):
             check = self.min_amount <= value <= self.max_amount
         setattr(instance, self.protected_name, check)
