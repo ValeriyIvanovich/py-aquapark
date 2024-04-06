@@ -1,6 +1,5 @@
 from __future__ import annotations
 from abc import ABC
-from typing import Callable
 
 
 class IntegerRange:
@@ -16,8 +15,9 @@ class IntegerRange:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance, value): # noqa
-        check = self.min_amount <= value <= self.max_amount
-        setattr(instance, self.protected_name, True if check else False)
+        if isinstance(value, int):
+            check = self.min_amount <= value <= self.max_amount
+        setattr(instance, self.protected_name, check)
 
 
 class Visitor:
@@ -60,7 +60,7 @@ class Slide:
 
     def __init__(self,
                  name: str,
-                 limitation_class: Callable) -> None:
+                 limitation_class: type[SlideLimitationValidator]) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
