@@ -14,7 +14,9 @@ class IntegerRange:
     def __set_name__(self, owner: Any, name: Any) -> None:
         self.name = name
 
-    def __get__(self, instance: Any, owner: Any) -> None:
+    def __get__(self, instance: Any, owner: Any) -> Any:
+        if instance is None:
+            return self
         return getattr(instance, self.name)
 
     def __set__(self, instance: Any, value: Any) -> None:
@@ -57,22 +59,16 @@ class SlideLimitationValidator(ABC):
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
 
-    def __init__(self) -> None:
-        super().__init__(
-            age=IntegerRange(4, 14),
-            weight=IntegerRange(20, 50),
-            height=IntegerRange(80, 120)
-        )
+    age = IntegerRange(4, 14)
+    weight = IntegerRange(20, 50)
+    height = IntegerRange(80, 120)
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
 
-    def __init__(self) -> None:
-        super().__init__(
-            age=IntegerRange(14, 60),
-            weight=IntegerRange(50, 120),
-            height=IntegerRange(120, 220)
-        )
+    age = IntegerRange(14, 60)
+    weight = IntegerRange(50, 120)
+    height = IntegerRange(120, 220)
 
 
 class Slide:
@@ -82,7 +78,7 @@ class Slide:
             limitation_class: Type[SlideLimitationValidator]
     ) -> None:
         self.name = name
-        self.limitation_class = limitation_class()
+        self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
         try:
