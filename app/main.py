@@ -12,11 +12,9 @@ class IntegerRange:
         self.max_amount = max_amount
 
     def __set_name__(self, owner: Any, name: Any) -> None:
-        self.name = name
+        self.name = "_" + name
 
     def __get__(self, instance: Any, owner: Any) -> Any:
-        if instance is None:
-            return self
         return getattr(instance, self.name)
 
     def __set__(self, instance: Any, value: Any) -> None:
@@ -48,9 +46,9 @@ class Visitor:
 class SlideLimitationValidator(ABC):
     def __init__(
             self,
-            age: IntegerRange,
-            weight: IntegerRange,
-            height: IntegerRange
+            age: int,
+            weight: int,
+            height: int
     ) -> None:
         self.age = age
         self.weight = weight
@@ -82,14 +80,7 @@ class Slide:
 
     def can_access(self, visitor: Visitor) -> bool:
         try:
-            limitation_validator = self.limitation_class
-            return all([
-                limitation_validator.age.min_amount <= visitor.age
-                <= limitation_validator.age.max_amount,
-                limitation_validator.weight.min_amount <= visitor.weight
-                <= limitation_validator.weight.max_amount,
-                limitation_validator.height.min_amount <= visitor.height
-                <= limitation_validator.height.max_amount
-            ])
+            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+            return True
         except ValueError:
             return False
