@@ -81,7 +81,7 @@ class Slide:
             limitation_class: SlideLimitationValidator
     ) -> None:
         self.name = name
-        self.limitation_validator = limitation_class
+        self.limitation_validator = limitation_class()
 
     def can_access(self, visitor: Visitor) -> bool:
         return self.limitation_validator.validate(visitor)
