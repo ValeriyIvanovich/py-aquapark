@@ -1,19 +1,26 @@
 from abc import ABC, abstractmethod
-from typing import Any, Type, Tuple
+from typing import Any, Type
 
 
-class IntegerRange:
-    def __init__(self, min_amount: int, max_amount: int) -> None:
-        self.min_amount = min_amount
-        self.max_amount = max_amount
+class Range:
+    def __init__(self, min_val: int, max_val: int) -> None:
+        self.min = min_val
+        self.max = max_val
 
-    def __get__(self, instance: Any, owner: Type) -> Tuple[int, int]:
+    def __set_name__(self, owner: Type, name: str) -> None:
+        self.private_name = "_" + name
+
+    def __get__(self, instance: Any, owner: Type) -> int:
         if instance is None:
-            return self.min_amount, self.max_amount
-        return self.min_amount, self.max_amount
+            return self
+        return getattr(instance, self.private_name)
 
     def __set__(self, instance: Any, value: int) -> None:
-        raise AttributeError("Cannot set value")
+        if not (self.min <= value <= self.max):
+            raise ValueError(
+                f"Value {value} out of range ({self.min}-{self.max})"
+            )
+        setattr(instance, self.private_name, value)
 
 
 class Visitor:
@@ -25,35 +32,44 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
+    def __init__(self) -> None:
+        self.age = Range(0, 100)
+        self.height = Range(0, 300)
+        self.weight = Range(0, 200)
+
     @abstractmethod
-    def validate(self, visitor: "Visitor") -> bool:
+    def validate(self, visitor: Visitor) -> bool:
         pass
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
-    age = IntegerRange(4, 14)
-    height = IntegerRange(80, 120)
-    weight = IntegerRange(20, 50)
+    def __init__(self) -> None:
+        super().__init__()
+        self.age = Range(4, 14)
+        self.height = Range(80, 120)
+        self.weight = Range(20, 50)
 
     def validate(self, visitor: Visitor) -> bool:
-        return all([
-            self.age[0] <= visitor.age <= self.age[1],
-            self.height[0] <= visitor.height <= self.height[1],
-            self.weight[0] <= visitor.weight <= self.weight[1],
-        ])
+        return (
+            self.age.min <= visitor.age <= self.age.max
+            and self.height.min <= visitor.height <= self.height.max
+            and self.weight.min <= visitor.weight <= self.weight.max
+        )
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
-    age = IntegerRange(14, 60)
-    height = IntegerRange(120, 220)
-    weight = IntegerRange(50, 120)
+    def __init__(self) -> None:
+        super().__init__()
+        self.age = Range(14, 60)
+        self.height = Range(120, 220)
+        self.weight = Range(50, 120)
 
     def validate(self, visitor: Visitor) -> bool:
-        return all([
-            self.age[0] <= visitor.age <= self.age[1],
-            self.height[0] <= visitor.height <= self.height[1],
-            self.weight[0] <= visitor.weight <= self.weight[1],
-        ])
+        return (
+            self.age.min <= visitor.age <= self.age.max
+            and self.height.min <= visitor.height <= self.height.max
+            and self.weight.min <= visitor.weight <= self.weight.max
+        )
 
 
 class Slide:
