@@ -13,7 +13,6 @@ class IntegerRange:
         owner: Any,
         name: str
     ) -> None:
-        self.public_name = name
         self.protected_name = "_" + name
 
     def __get__(
@@ -26,7 +25,7 @@ class IntegerRange:
     def __set__(self, instance: Any, value: int) -> None:
         if not (self.min_amount <= value <= self.max_amount):
             raise ValueError(
-                f"{self.public_name} should be between "
+                f"{self.protected_name} should be between "
                 f"{self.min_amount} and {self.max_amount}!"
             )
         setattr(instance, self.protected_name, value)
