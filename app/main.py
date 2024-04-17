@@ -15,7 +15,9 @@ class IntegerRange:
 
     def __set__(self, instance: Any, value: int) -> None:
         if not (self.min_amount <= value <= self.max_amount):
-            raise ValueError
+            raise ValueError(
+                f"Value is wrong."
+                f"Should between {self.min_amount} and {self.max_amount}")
         setattr(instance, self.protected_name, value)
 
 
@@ -59,16 +61,3 @@ class Slide:
             return True
         except ValueError:
             return False
-
-
-if __name__ == "__main__":
-    children_slide = Slide("Children Slide", ChildrenSlideLimitationValidator)
-    adult_slide = Slide("Adult Slide", AdultSlideLimitationValidator)
-
-    visitor1 = Visitor("Alice", age=10, weight=30, height=100)
-    visitor2 = Visitor("Bob", age=25, weight=80, height=290)
-
-    print(f"{visitor1.name} can access {children_slide.name}: "
-          f"{children_slide.can_access(visitor1)}")
-    print(f"{visitor2.name} can access {adult_slide.name}: "
-          f"{adult_slide.can_access(visitor2)}")
