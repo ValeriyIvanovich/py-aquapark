@@ -28,20 +28,17 @@ class Visitor:
 class SlideLimitationValidator(ABC):
     def __init__(self,
                  age: IntegerRange,
-                 weight: IntegerRange,
-                 height: IntegerRange
+                 we: IntegerRange,
+                 he: IntegerRange
                  ) -> None:
         self.age = age
-        self.weight = weight
-        self.height = height
+        self.we = we
+        self.he = he
 
     def validate(self, visitor: Visitor) -> bool:
-        return (self.age.min_amount <= visitor.age
-                and visitor.age <= self.age.max_amount
-                and self.weight.min_amount <= visitor.weight
-                and visitor.weight <= self.weight.max_amount
-                and self.height.min_amount <= visitor.height
-                and visitor.height <= self.height.max_amount)
+        return (self.age.min_amount <= visitor.age <= self.age.max_amount
+                and self.we.min_amount <= visitor.weight <= self.we.max_amount
+                and self.he.min_amount <= visitor.height <= self.he.max_amount)
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
