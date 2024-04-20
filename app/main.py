@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Any
+from typing import Type
 from abc import ABC
 
 
