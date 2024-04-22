@@ -7,21 +7,21 @@ class IntegerRange:
         self.max_amount = max_amount
 
     def __set_name__(self, owner: type, name: str) -> None:
-        self.name = name
+        self.protected_name = "_" + name
 
     def __get__(self,
                 instance: "SlideLimitationValidator",
                 owner: type
                 ) -> tuple:
-        return getattr(instance, self.name)
+        return getattr(instance, self.protected_name)
 
     def __set__(self,
                 instance: "SlideLimitationValidator",
                 value: int
-                ) -> None | bool:
+                ) -> None:
         if not (self.min_amount <= value <= self.max_amount):
             raise ValueError
-        return True
+        setattr(instance, self.protected_name, value)
 
 
 class Visitor:
