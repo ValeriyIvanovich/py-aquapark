@@ -14,7 +14,7 @@ class IntegerRange:
 
     def __set__(self, instance: object, value: int) -> None:
         if not isinstance(value, int):
-            raise ValueError("Value must be integer.")
+            raise TypeError("Value must be integer.")
         elif not (self.min_amount <= value <= self.max_amount):
             raise ValueError(
                 f"Value must be between {self.min_amount}"
