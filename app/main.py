@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Tuple
 
 
@@ -47,9 +47,9 @@ class SlideLimitationValidator(ABC):
 
     def validate(self, visitor: Visitor) -> bool:
         return (
-                self.age_range[0] <= visitor.age <= self.age_range[1]
-                and self.weight_range[0] <= visitor.weight <= self.weight_range[1]
-                and self.height_range[0] <= visitor.height <= self.height_range[1]
+            self.age_range[0] <= visitor.age <= self.age_range[1]
+            and self.weight_range[0] <= visitor.weight <= self.weight_range[1]
+            and self.height_range[0] <= visitor.height <= self.height_range[1]
         )
 
 
