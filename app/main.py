@@ -1,4 +1,6 @@
+from __future__ import annotations
 from abc import ABC
+from typing import Any
 
 
 class IntegerRange:
@@ -7,26 +9,32 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner: SlideLimitationValidator, name: str) -> None:
         self.private_name = "_" + name
 
-    def __get__(self, instance, owner):
+    def __get__(
+            self,
+            instance: SlideLimitationValidator,
+            objtype: Any = None
+    ) -> int:
         return getattr(instance, self.private_name)
 
-    def __set__(self, instance, value):
+    def __set__(self, instance: SlideLimitationValidator, value: int) -> None:
         if not self.min_amount <= value <= self.max_amount:
-            raise ValueError(f"Value should be from {self.min_amount} to {self.max_amount}")
+            raise ValueError(
+                f"Value should be from {self.min_amount} to {self.max_amount}"
+            )
         setattr(instance, self.private_name, value)
 
 
 class Visitor:
 
     def __init__(
-           self,
-           name: str,
-           age: int,
-           weight: int,
-           height: int
+            self,
+            name: str,
+            age: int,
+            weight: int,
+            height: int
     ) -> None:
         self.name = name
         self.age = age
@@ -42,7 +50,6 @@ class SlideLimitationValidator(ABC):
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
-
     age = IntegerRange(4, 14)
     height = IntegerRange(80, 120)
     weight = IntegerRange(20, 50)
@@ -68,19 +75,31 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 class Slide:
 
-    def __init__(self, name: str, limitation_class: SlideLimitationValidator) -> None:
+    def __init__(
+            self,
+            name: str,
+            limitation_class: SlideLimitationValidator
+    ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
         if self.limitation_class == ChildrenSlideLimitationValidator:
             try:
-                ChildrenSlideLimitationValidator(visitor.age, visitor.weight, visitor.height)
+                ChildrenSlideLimitationValidator(
+                    visitor.age,
+                    visitor.weight,
+                    visitor.height
+                )
             except ValueError:
                 return False
         else:
             try:
-                AdultSlideLimitationValidator(visitor.age, visitor.weight, visitor.height)
+                AdultSlideLimitationValidator(
+                    visitor.age,
+                    visitor.weight,
+                    visitor.height
+                )
             except ValueError:
                 return False
 
