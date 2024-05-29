@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Type
 
 
@@ -34,12 +34,10 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
-    def __init__(self, visitor: Visitor) -> None:
-        self.visitor = visitor
-
-    @abstractmethod
-    def validate(self) -> bool:
-        pass
+    def __init__(self, age: int, weight: int, height: int) -> None:
+        self.age = age
+        self.weight = weight
+        self.height = height
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator, ABC):
@@ -47,23 +45,11 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator, ABC):
     height = IntegerRange(80, 120)
     weight = IntegerRange(20, 50)
 
-    def validate(self) -> bool:
-        valid_age = 4 <= self.visitor.age <= 14
-        valid_height = 80 <= self.visitor.height <= 120
-        valid_weight = 20 <= self.visitor.weight <= 50
-        return valid_age and valid_height and valid_weight
-
 
 class AdultSlideLimitationValidator(SlideLimitationValidator, ABC):
     age = IntegerRange(14, 60)
     height = IntegerRange(120, 220)
     weight = IntegerRange(50, 120)
-
-    def validate(self) -> bool:
-        valid_age = 14 <= self.visitor.age <= 60
-        valid_height = 120 <= self.visitor.height <= 220
-        valid_weight = 50 <= self.visitor.weight <= 120
-        return valid_age and valid_height and valid_weight
 
 
 class Slide:
@@ -75,5 +61,8 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        validator = self.limitation_class(visitor)
-        return validator.validate()
+        try:
+            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+        except (TypeError, ValueError):
+            return False
+        return True
