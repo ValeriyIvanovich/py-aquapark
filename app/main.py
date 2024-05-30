@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Type
 
 
@@ -22,9 +22,6 @@ class IntegerRange:
 
 
 class Visitor:
-    age = IntegerRange(min_amount=0, max_amount=120)
-    height = IntegerRange(min_amount=50, max_amount=250)
-    weight = IntegerRange(min_amount=10, max_amount=300)
 
     def __init__(self, name: str, age: int, weight: int, height: int) -> None:
         self.name = name
@@ -34,28 +31,22 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
-    def __init__(self, visitor: Visitor) -> None:
-        self.visitor = visitor
-
-    @abstractmethod
-    def validate(self) -> bool:
-        pass
+    def __init__(self, age: int, weight: int, height: int) -> None:
+        self.age = age
+        self.weight = weight
+        self.height = height
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
-    def validate(self) -> bool:
-        valid_age = 4 <= self.visitor.age <= 14
-        valid_height = 80 <= self.visitor.height <= 120
-        valid_weight = 20 <= self.visitor.weight <= 50
-        return valid_age and valid_height and valid_weight
+    age = IntegerRange(4, 14)
+    height = IntegerRange(80, 120)
+    weight = IntegerRange(20, 50)
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
-    def validate(self) -> bool:
-        valid_age = 14 <= self.visitor.age <= 60
-        valid_height = 120 <= self.visitor.height <= 220
-        valid_weight = 50 <= self.visitor.weight <= 120
-        return valid_age and valid_height and valid_weight
+    age = IntegerRange(14, 60)
+    height = IntegerRange(120, 220)
+    weight = IntegerRange(50, 120)
 
 
 class Slide:
@@ -65,4 +56,8 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        return self.limitation_class(visitor).validate()
+        try:
+            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+        except Exception:
+            return False
+        return True
