@@ -5,15 +5,16 @@ class IntegerRange:
     def __init__(self, min_amount: int, max_amount: int) -> None:
         self.min_amount = min_amount
         self.max_amount = max_amount
+        self.protected_name = None
 
     def __get__(self, instance: object, owner: object) -> object:
-        return instance.__dict__[self.name]
-
-    def __set__(self, instance: object, value: str) -> None:
-        instance.__dict__[self.name] = value
+        return getattr(instance, self.protected_name)
 
     def __set_name__(self, owner: object, name: str) -> None:
-        self.name = name
+        self.protected_name = "_" + name
+
+    def __set__(self, instance: object, value: str) -> None:
+        setattr(instance, self.protected_name, value)
 
 
 class Visitor:
