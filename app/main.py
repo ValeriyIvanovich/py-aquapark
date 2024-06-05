@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class IntegerRange:
@@ -22,7 +22,7 @@ class Visitor:
     weight = IntegerRange(0, 0)
 
     def __init__(self, name: str, age: str,
-                 weight: str, height: str):
+                 weight: str, height: str) -> None:
         self.name = name
         self.age = age
         self.weight = weight
@@ -51,7 +51,7 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(age=IntegerRange(14, 60),
                          weight=IntegerRange(50, 120),
                          height=IntegerRange(120, 220))
