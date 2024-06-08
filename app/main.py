@@ -9,16 +9,10 @@ class IntegerRange:
     def __set_name__(self, owner: type, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self,
-                instance: "SlideLimitationValidator",
-                owner: type
-                ) -> int:
+    def __get__(self, instance: object, owner: type) -> int:
         return getattr(instance, self.protected_name)
 
-    def __set__(self,
-                instance: "SlideLimitationValidator",
-                value: int
-                ) -> None:
+    def __set__(self, instance: object, value: int) -> None:
         if not isinstance(value, int):
             raise TypeError("The value must be an integer.")
         if not self.min_amount <= value <= self.max_amount:
