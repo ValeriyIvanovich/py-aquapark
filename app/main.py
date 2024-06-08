@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from abc import ABC
 
 
 class IntegerRange:
@@ -10,14 +9,20 @@ class IntegerRange:
     def __set_name__(self, owner: type, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance: Any, owner: type) -> int:
+    def __get__(self,
+                instance: "SlideLimitationValidator",
+                owner: type
+                ) -> int:
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance: Any, value: int) -> None:
+    def __set__(self,
+                instance: "SlideLimitationValidator",
+                value: int
+                ) -> None:
         if not isinstance(value, int):
-            raise TypeError()
+            raise TypeError("The value must be an integer.")
         if not self.min_amount <= value <= self.max_amount:
-            raise ValueError()
+            raise ValueError("ValueError: Value is outside the allowed range.")
         setattr(instance, self.protected_name, value)
 
 
@@ -39,9 +44,12 @@ class SlideLimitationValidator(ABC):
         self.weight = weight
         self.height = height
 
-    @abstractmethod
     def validate(self, visitor: Visitor) -> bool:
-        pass
+        return (self.age.min_amount <= visitor.age <= self.age.max_amount
+                and self.weight.min_amount <= visitor.weight
+                <= self.weight.max_amount
+                and self.height.min_amount <= visitor.height
+                <= self.height.max_amount)
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
@@ -52,13 +60,6 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
             height=IntegerRange(80, 120)
         )
 
-    def validate(self, visitor: Visitor) -> bool:
-        return (self.age.min_amount <= visitor.age <= self.age.max_amount
-                and self.weight.min_amount <= visitor.weight
-                <= self.weight.max_amount
-                and self.height.min_amount <= visitor.height
-                <= self.height.max_amount)
-
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
     def __init__(self) -> None:
@@ -67,13 +68,6 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
             weight=IntegerRange(50, 120),
             height=IntegerRange(120, 220)
         )
-
-    def validate(self, visitor: Visitor) -> bool:
-        return (self.age.min_amount <= visitor.age <= self.age.max_amount
-                and self.weight.min_amount <= visitor.weight
-                <= self.weight.max_amount
-                and self.height.min_amount <= visitor.height
-                <= self.height.max_amount)
 
 
 class Slide:
