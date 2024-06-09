@@ -16,7 +16,7 @@ class IntegerRange:
         if self.min_amount <= value <= self.max_amount:
             setattr(instance, self.protected_field, value)
         else:
-            setattr(instance, self.protected_field, None)
+            raise ValueError
 
 
 class Visitor:
@@ -56,14 +56,12 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        visitor_result = self.limitation_class(
-            age=visitor.age,
-            height=visitor.height,
-            weight=visitor.weight
-        )
-        if (visitor_result.age
-                and visitor_result.weight
-                and visitor_result.height):
+        try:
+            self.limitation_class(
+                age=visitor.age,
+                height=visitor.height,
+                weight=visitor.weight
+            )
             return True
-
-        return False
+        except ValueError:
+            return False
