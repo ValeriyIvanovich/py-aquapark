@@ -52,19 +52,16 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
         )
 
     def validate(self, visitor: Visitor) -> bool:
-        if not (
-                self.age.min_amount <= visitor.age <= self.age.max_amount
-        ):
-            return False
-        if not (
-                self.height.min_amount <= visitor.height
-                <= self.height.max_amount
-        ):
-            return False
-        if not (
-                self.weight.min_amount <= visitor.weight
-                <= self.weight.max_amount
-        ):
+        try:
+            attributes = ["age", "height", "weight"]
+            for attr in attributes:
+                min_amount = getattr(self, attr).min_amount
+                max_amount = getattr(self, attr).max_amount
+                value = getattr(visitor, attr)
+                if not (min_amount <= value <= max_amount):
+                    return False
+        except AttributeError as e:
+            print(f"Attribute error: {e}")
             return False
         return True
 
@@ -78,20 +75,16 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
         )
 
     def validate(self, visitor: Visitor) -> bool:
-        if not (
-                self.age.min_amount <= visitor.age
-                <= self.age.max_amount
-        ):
-            return False
-        if not (
-                self.height.min_amount <= visitor.height
-                <= self.height.max_amount
-        ):
-            return False
-        if not (
-                self.weight.min_amount <= visitor.weight
-                <= self.weight.max_amount
-        ):
+        try:
+            attributes = ["age", "height", "weight"]
+            for attr in attributes:
+                min_amount = getattr(self, attr).min_amount
+                max_amount = getattr(self, attr).max_amount
+                value = getattr(visitor, attr)
+                if not (min_amount <= value <= max_amount):
+                    return False
+        except AttributeError as e:
+            print(f"Attribute error: {e}")
             return False
         return True
 
