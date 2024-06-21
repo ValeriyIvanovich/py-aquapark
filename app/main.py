@@ -1,5 +1,6 @@
+from __future__ import annotations
 from abc import ABC
-from typing import Any, Callable
+from typing import Type
 
 
 class IntegerRange:
@@ -7,13 +8,25 @@ class IntegerRange:
         self.min_value = min_value
         self.max_value = max_value
 
-    def __set_name__(self, owner: Any, name: str) -> None:
+    def __set_name__(
+            self,
+            owner: Type[SlideLimitationValidator],
+            name: str
+    ) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance: Any, owner: Any) -> int:
+    def __get__(
+            self,
+            instance: SlideLimitationValidator,
+            owner: Type[SlideLimitationValidator]
+    ) -> int:
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance: Any, value: int) -> None:
+    def __set__(
+            self,
+            instance: SlideLimitationValidator,
+            value: int
+    ) -> None:
         if not isinstance(value, int):
             raise TypeError("Value must be an integer")
         if value not in range(self.min_value, self.max_value + 1):
@@ -50,7 +63,11 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 
 class Slide:
-    def __init__(self, name: str, limitation_class: Callable) -> None:
+    def __init__(
+            self,
+            name: str,
+            limitation_class: Type[SlideLimitationValidator]
+    ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
