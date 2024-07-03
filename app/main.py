@@ -17,9 +17,8 @@ class IntegerRange:
         if not isinstance(value, int):
             raise TypeError("Value should be an integer")
         if not self.min_amount <= value <= self.max_amount:
-            setattr(instance, self.protected_name, "access denied")
-        else:
-            setattr(instance, self.protected_name, value)
+            raise ValueError("Value is not in allowable range")
+        setattr(instance, self.protected_name, value)
 
 
 class Visitor:
@@ -55,18 +54,9 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        if self.limitation_class is AdultSlideLimitationValidator:
-            permission = AdultSlideLimitationValidator(
-                visitor.age, visitor.weight, visitor.height
-            )
-        else:
-            permission = ChildrenSlideLimitationValidator(
-                visitor.age, visitor.weight, visitor.height
-            )
-        if (
-                permission.weight == "access denied"
-                or permission.height == "access denied"
-                or permission.age == "access denied"
-        ):
+        try:
+            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+        except ValueError:
             return False
-        return True
+        else:
+            return True
