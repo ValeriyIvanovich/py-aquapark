@@ -1,5 +1,4 @@
 from abc import ABC
-from typing import Any
 
 
 class IntegerRange:
@@ -7,13 +6,13 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner: Any, name: str) -> None:
+    def __set_name__(self, owner: object, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance: Any, owner: Any) -> int:
+    def __get__(self, instance: object, owner: object) -> int:
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance: Any, value: int) -> None:
+    def __set__(self, instance: object, value: int) -> None:
         if not isinstance(value, int):
             raise TypeError("Value should be an integer")
         if not self.min_amount <= value <= self.max_amount:
@@ -60,10 +59,7 @@ class Slide:
     def can_access(self, visitor: Visitor) -> bool:
         try:
             self.limitation_class(visitor.age, visitor.weight, visitor.height)
-        except ValueError:
-            print("Access denied")
-            return False
-        except TypeError:
-            print("Insert correct data")
+        except (ValueError, TypeError):
+            print("Access denied or incorrect data provided")
             return False
         return True
