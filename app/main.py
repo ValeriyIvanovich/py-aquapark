@@ -49,7 +49,11 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 
 class Slide:
-    def __init__(self, name: str, limitation_class: type) -> None:
+    def __init__(
+            self,
+            name: str,
+            limitation_class: type[SlideLimitationValidator]
+    ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
@@ -57,6 +61,9 @@ class Slide:
         try:
             self.limitation_class(visitor.age, visitor.weight, visitor.height)
         except ValueError:
+            print("Access denied")
             return False
-        else:
-            return True
+        except TypeError:
+            print("Insert correct data")
+            return False
+        return True
