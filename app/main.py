@@ -7,13 +7,13 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner: str, name: str) -> None:
+    def __set_name__(self, owner: object, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance: str, owner: str) -> None:
+    def __get__(self, instance: object, owner: str) -> None:
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance: str, value: int) -> None:
+    def __set__(self, instance: object, value: int) -> None:
         if not isinstance(value, int):
             raise TypeError("Value is not int")
         if not self.min_amount <= value <= self.max_amount:
