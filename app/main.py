@@ -9,8 +9,7 @@ class IntegerRange:
     def __set_name__(self, owner: ABC, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance: ABC, owner: ABC) -> None:git commit -am "Solution"
-
+    def __get__(self, instance: ABC, owner: ABC) -> None:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: ABC, value: int) -> None:
