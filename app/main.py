@@ -39,9 +39,10 @@ class SlideLimitationValidator(ABC):
         self.height = height
         self.weight = weight
 
-    @abstractmethod
-    def validate(self) -> None:
-        pass
+    def validate(self) -> bool:
+        if self.age and self.weight and self.height:
+            return True
+        return False
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
@@ -49,21 +50,11 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
     height = IntegerRange(80, 120)
     weight = IntegerRange(20, 50)
 
-    def validate(self) -> bool:
-        if self.age and self.weight and self.height:
-            return True
-        return False
-
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
     age = IntegerRange(14, 60)
     height = IntegerRange(120, 220)
     weight = IntegerRange(50, 120)
-
-    def validate(self) -> bool:
-        if self.age and self.height and self.weight:
-            return True
-        return False
 
 
 class Slide:
