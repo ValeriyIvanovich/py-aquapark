@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from abc import ABC
-from typing import Type
 
 
 class IntegerRange:
@@ -9,7 +10,7 @@ class IntegerRange:
 
     def __set_name__(
             self,
-            owner: "SlideLimitationValidator",
+            owner: SlideLimitationValidator,
             name: str
     ) -> None:
         self.public_name = name
@@ -17,14 +18,14 @@ class IntegerRange:
 
     def __get__(
             self,
-            instance: "SlideLimitationValidator",
-            owner: "SlideLimitationValidator"
+            instance: SlideLimitationValidator,
+            owner: SlideLimitationValidator
     ) -> None:
         return getattr(instance, self.private_name)
 
     def __set__(
             self,
-            instance: "SlideLimitationValidator",
+            instance: SlideLimitationValidator,
             value: int
     ) -> None:
         if not (self.min_amount <= value <= self.max_amount):
@@ -64,7 +65,7 @@ class Slide:
     def __init__(
             self,
             name: str,
-            limitation_class: Type[SlideLimitationValidator]
+            limitation_class: SlideLimitationValidator
     ) -> None:
         self.name = name
         self.limitation_class = limitation_class
