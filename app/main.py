@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Any
+
 from abc import ABC
+from typing import Any
 
 
 class IntegerRange:
@@ -62,11 +63,13 @@ class Slide:
         self.name = name
         self.limitation_class = limitation_class
 
-    def can_access(self, instance: Visitor) -> None:
+    def can_access(self, instance: Visitor) -> bool:
         try:
-            self.limitation_class(instance.age,
-                                  instance.weight,
-                                  instance.height)
+            self.limitation_class(
+                instance.age,
+                instance.weight,
+                instance.height
+            )
         except ValueError:
             return False
         return True
