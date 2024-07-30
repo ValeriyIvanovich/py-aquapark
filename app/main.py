@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 
 
@@ -8,7 +10,7 @@ class IntegerRange:
 
     def __set_name__(
             self,
-            owner: "SlideLimitationValidator",
+            owner: SlideLimitationValidator,
             name: str
     ) -> None:
         self.public_name = name
@@ -16,14 +18,14 @@ class IntegerRange:
 
     def __get__(
             self,
-            instance: "SlideLimitationValidator",
-            owner: "SlideLimitationValidator"
+            instance: SlideLimitationValidator,
+            owner: SlideLimitationValidator
     ) -> int | None:
         return getattr(instance, self.protected_name)
 
     def __set__(
             self,
-            instance: "SlideLimitationValidator",
+            instance: SlideLimitationValidator,
             value: int
     ) -> None:
         if self.min_amount <= value <= self.max_amount:
@@ -52,17 +54,11 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
     height = IntegerRange(80, 120)
     weight = IntegerRange(20, 50)
 
-    def __init__(self, age: int, weight: int, height: int) -> None:
-        super().__init__(age, weight, height)
-
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
     age = IntegerRange(14, 60)
     height = IntegerRange(120, 220)
     weight = IntegerRange(50, 120)
-
-    def __init__(self, age: int, weight: int, height: int) -> None:
-        super().__init__(age, weight, height)
 
 
 class Slide:
