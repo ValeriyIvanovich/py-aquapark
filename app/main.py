@@ -19,8 +19,7 @@ class IntegerRange:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: SlideLimitationValidator, value: int) -> None:
-        if not (isinstance(value, int)
-                and self.min_amount <= value <= self.max_amount):
+        if not self.min_amount <= value <= self.max_amount:
             value = None
         setattr(instance, self.protected_name, value)
 
@@ -34,15 +33,17 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
-    def __init__(self, age: int, height: int, weight: int) -> None:
-        self.age = age
-        self.height = height
-        self.weight = weight
-
-    def validate(self) -> bool:
-        if self.age and self.weight and self.height:
-            return True
-        return False
+    def __init__(
+            self,
+            age: int = None,
+            height: int = None,
+            weight: int = None
+    ) -> None:
+        if all(isinstance(value, int) for value in (age, height, weight)):
+            self.age = age
+            self.height = height
+            self.weight = weight
+            self.approved = all((self.age, self.weight, self.height))
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
@@ -61,15 +62,14 @@ class Slide:
     def __init__(
         self,
         name: str,
-        limitation_class: type
+        limitation_class: SlideLimitationValidator()
     ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        validator = self.limitation_class(
+        return self.limitation_class(
             visitor.age,
             visitor.height,
             visitor.weight
-        )
-        return validator.validate()
+        ).approved
