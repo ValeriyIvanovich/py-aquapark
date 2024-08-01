@@ -15,14 +15,23 @@ class IntegerRange:
 
     def __set__(self, instance: SlideLimitationValidator, value: int) -> None:
         if not isinstance(value, int):
-            return
+            raise TypeError("Enter an integer")
         if not (self.min_amount <= value <= self.max_amount):
-            return
+            raise ValueError(
+                f"Value must be between "
+                f"{self.min_amount} and {self.max_amount}"
+            )
         setattr(instance, self.protected, value)
 
 
 class Visitor:
-    def __init__(self, name: str, age: int, weight: int, height: int) -> None:
+    def __init__(
+            self,
+            name: str,
+            age: int,
+            weight: int,
+            height: int
+    ) -> None:
         self.name = name
         self.age = age
         self.weight = weight
@@ -49,14 +58,21 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 
 class Slide:
-    def __init__(self, name: str, limitation_class: type) -> None:
+    def __init__(
+            self,
+            name: str,
+            limitation_class: type[SlideLimitationValidator]
+    ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        limitations_passed = self.limitation_class(
-            age=visitor.age, weight=visitor.weight, height=visitor.height
-        )
-        if len(vars(limitations_passed)) == 3:
-            return True
-        return False
+        try:
+            self.limitation_class(
+                age=visitor.age,
+                weight=visitor.weight,
+                height=visitor.height
+            )
+        except ValueError or TypeError:
+            return False
+        return True
