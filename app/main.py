@@ -17,14 +17,6 @@ class IntegerRange:
             setattr(instance, self.protected_name, value)
 
 
-class Visitor:
-    def __init__(self, name: str, age: int, weight: int, height: int) -> None:
-        self.name = name
-        self.age = age
-        self.weight = weight
-        self.height = height
-
-
 class SlideLimitationValidator(ABC):
 
     def __init__(self, age: int, weight: int, height: int) -> None:
@@ -45,6 +37,19 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
     height = IntegerRange(120, 220)
 
 
+class Visitor:
+
+    def __init__(self, name: str, age: int, weight: int, height: int) -> None:
+        self.name = name
+        self.age = age
+        self.weight = weight
+        self.height = height
+        self.limitation_class_ch = (ChildrenSlideLimitationValidator
+                                    (self.age, self.weight, self.height))
+        self.limitation_class_ad = (AdultSlideLimitationValidator
+                                    (self.age, self.weight, self.height))
+
+
 class Slide:
     def __init__(self, name: str,
                  limitation_class: SlideLimitationValidator
@@ -54,20 +59,14 @@ class Slide:
 
     def can_access(self, visitor: Visitor) -> bool:
         class_visit = None
-        valid_adult = AdultSlideLimitationValidator(visitor.age,
-                                                    visitor.weight,
-                                                    visitor.height
-                                                    )
-        valid_children = ChildrenSlideLimitationValidator(visitor.age,
-                                                          visitor.weight,
-                                                          visitor.height
-                                                          )
-        if len(valid_adult.__dict__) == len(valid_children.__dict__) == 3:
+        if (len(visitor.limitation_class_ch.__dict__)
+                == len(visitor.limitation_class_ad.__dict__)
+                == 3):
             return True
-        if len(valid_adult.__dict__) == 3:
-            class_visit = type(valid_adult)
-        if len(valid_children.__dict__) == 3:
-            class_visit = type(valid_children)
+        if len(visitor.limitation_class_ad.__dict__) == 3:
+            class_visit = type(visitor.limitation_class_ad)
+        if len(visitor.limitation_class_ch.__dict__) == 3:
+            class_visit = type(visitor.limitation_class_ch)
         if self.limitation_class == class_visit:
             return True
         return False
