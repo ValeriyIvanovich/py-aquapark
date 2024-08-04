@@ -13,8 +13,9 @@ class IntegerRange:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: str, value: int) -> None:
-        if self.min_amount <= value <= self.max_amount:
-            setattr(instance, self.protected_name, value)
+        if not self.min_amount <= value <= self.max_amount:
+            raise ValueError
+        setattr(instance, self.protected_name, value)
 
 
 class SlideLimitationValidator(ABC):
@@ -44,10 +45,6 @@ class Visitor:
         self.age = age
         self.weight = weight
         self.height = height
-        self.limitation_class_ch = (ChildrenSlideLimitationValidator
-                                    (self.age, self.weight, self.height))
-        self.limitation_class_ad = (AdultSlideLimitationValidator
-                                    (self.age, self.weight, self.height))
 
 
 class Slide:
@@ -58,15 +55,23 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        class_visit = None
-        if (len(visitor.limitation_class_ch.__dict__)
-                == len(visitor.limitation_class_ad.__dict__)
-                == 3):
-            return True
-        if len(visitor.limitation_class_ad.__dict__) == 3:
-            class_visit = type(visitor.limitation_class_ad)
-        if len(visitor.limitation_class_ch.__dict__) == 3:
-            class_visit = type(visitor.limitation_class_ch)
-        if self.limitation_class == class_visit:
-            return True
-        return False
+        if (self.limitation_class.__name__
+                == "AdultSlideLimitationValidator"):
+            try:
+                AdultSlideLimitationValidator(visitor.age,
+                                              visitor.weight,
+                                              visitor.height)
+            except ValueError:
+                return False
+            else:
+                return True
+        if (self.limitation_class.__name__
+                == "ChildrenSlideLimitationValidator"):
+            try:
+                ChildrenSlideLimitationValidator(visitor.age,
+                                                 visitor.weight,
+                                                 visitor.height)
+            except ValueError:
+                return False
+            else:
+                return True
