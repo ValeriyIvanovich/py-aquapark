@@ -63,8 +63,6 @@ class Slide:
                                               visitor.height)
             except ValueError:
                 return False
-            else:
-                return True
         if (self.limitation_class.__name__
                 == "ChildrenSlideLimitationValidator"):
             try:
@@ -73,5 +71,4 @@ class Slide:
                                                  visitor.height)
             except ValueError:
                 return False
-            else:
-                return True
+        return True
