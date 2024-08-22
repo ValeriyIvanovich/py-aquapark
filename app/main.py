@@ -11,9 +11,11 @@ class IntegerRange:
         self.protected_name = "_" + name
 
     def __set__(self, instance: Callable, value: int) -> None:
-        print(self.max_amount, self.min_amount, "value:", value)
-        if self.max_amount >= value >= self.min_amount:
-            setattr(instance, self.protected_name, value)
+        if not isinstance(value, int):
+            raise TypeError
+        if not (self.max_amount >= value >= self.min_amount):
+            raise ValueError
+        setattr(instance, self.protected_name, value)
 
     def __get__(self, instance: Callable, owner: Callable) -> int:
         return getattr(instance, self.protected_name)
@@ -67,14 +69,12 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        validated = self.limitation_class(
-            visitor.age,
-            visitor.weight,
-            visitor.height
-        )
-
-        for attr in ("_age", "_height", "_weight"):
-            if attr not in validated.__dict__:
-                return False
-
+        try:
+            self.limitation_class(
+                visitor.age,
+                visitor.weight,
+                visitor.height
+            )
+        except (TypeError, ValueError):
+            return False
         return True
