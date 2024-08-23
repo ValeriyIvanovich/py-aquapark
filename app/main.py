@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class IntegerRange:
@@ -39,33 +39,15 @@ class SlideLimitationValidator(ABC):
         self.weight = IntegerRange(*weight)
         self.height = IntegerRange(*height)
 
-    @abstractmethod
-    def validate(self, visitor: Visitor) -> bool:
-        pass
-
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
     def __init__(self) -> None:
         super().__init__(age=(4, 14), weight=(20, 50), height=(80, 120))
 
-    def validate(self, visitor: Visitor) -> bool:
-        return (self.age.min_amount <= visitor.age <= self.age.max_amount
-                and self.weight.min_amount <= visitor.weight
-                <= self.weight.max_amount
-                and self.height.min_amount <= visitor.height
-                <= self.height.max_amount)
-
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
     def __init__(self) -> None:
         super().__init__(age=(14, 60), weight=(50, 120), height=(120, 220))
-
-    def validate(self, visitor: Visitor) -> bool:
-        return (self.age.min_amount <= visitor.age <= self.age.max_amount
-                and self.weight.min_amount <= visitor.weight
-                <= self.weight.max_amount
-                and self.height.min_amount <= visitor.height
-                <= self.height.max_amount)
 
 
 class Slide:
@@ -78,4 +60,9 @@ class Slide:
         self.limitation_class = limitation_class()
 
     def can_access(self, visitor: Visitor) -> bool:
-        return self.limitation_class.validate(visitor)
+        return (self.limitation_class.age.min_amount <= visitor.age
+                <= self.limitation_class.age.max_amount
+                and self.limitation_class.weight.min_amount
+                <= visitor.weight <= self.limitation_class.weight.max_amount
+                and self.limitation_class.height.min_amount <= visitor.height
+                <= self.limitation_class.height.max_amount)
