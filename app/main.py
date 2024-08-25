@@ -9,18 +9,18 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
+    def __set_name__(self, owner: Type[Slide], name: str) -> None:
+        self.protected_name = f"_{name}"
+
     def __get__(self, instance: Slide, owner: Type[Slide]) -> IntegerRange:
-        return getattr(instance, self._name)
+        return getattr(instance, self.protected_name)
 
     def __set__(self, instance: Slide, value: int) -> None:
         if value > self.max_amount or value < self.min_amount:
             raise ValueError(
                 f"Value {value} is out of range."
             )
-        setattr(instance, self._name, value)
-
-    def __set_name__(self, owner: Type[Slide], name: str) -> None:
-        self._name = name
+        setattr(instance, self.protected_name, value)
 
 
 class Visitor:
@@ -33,21 +33,21 @@ class Visitor:
 
 class SlideLimitationValidator(ABC):
     def __init__(self, age: int, weight: int, height: int) -> None:
-        self.age_range = age
-        self.weight_range = weight
-        self.height_range = height
+        self.age = age
+        self.weight = weight
+        self.height = height
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
-    age_range = IntegerRange(4, 14)
-    weight_range = IntegerRange(20, 50)
-    height_range = IntegerRange(80, 120)
+    age = IntegerRange(4, 14)
+    weight = IntegerRange(20, 50)
+    height = IntegerRange(80, 120)
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
-    age_range = IntegerRange(14, 60)
-    weight_range = IntegerRange(50, 120)
-    height_range = IntegerRange(120, 220)
+    age = IntegerRange(14, 60)
+    weight = IntegerRange(50, 120)
+    height = IntegerRange(120, 220)
 
 
 class Slide:
