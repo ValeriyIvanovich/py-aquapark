@@ -21,7 +21,10 @@ class IntegerRange:
             raise TypeError("Expected value to be an int")
 
         if value < self.min_amount or value > self.max_amount:
-            raise ValueError("Value error !!!")
+            raise ValueError(
+                f"Expected {value!r} to be no more than {self.min_amount}"
+                f"and less than {self.max_amount}."
+            )
 
 
 class Visitor:
@@ -55,32 +58,19 @@ class Slide:
     def __init__(
         self,
         name: str,
-        limitation_class: ChildrenSlideLimitationValidator
-            | AdultSlideLimitationValidator
+        limitation_class: type[SlideLimitationValidator]
     ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> None:
-        has_access = False
-        if visitor.age <= 60 and visitor.age >= 14:
-            if self.limitation_class is None:
-                self.limitation_class = AdultSlideLimitationValidator
-
-        if visitor.age <= 14 and visitor.age >= 4:
-            if self.limitation_class is None:
-                self.limitation_class = ChildrenSlideLimitationValidator
-
-        if self.limitation_class is not None:
-            try:
-                self.limitation_class(
-                    visitor.age,
-                    visitor.height,
-                    visitor.weight
-                )
-            except ValueError:
-                has_access = False
-            else:
-                has_access = True
-
-        return has_access
+        try:
+            self.limitation_class(
+                visitor.age,
+                visitor.height,
+                visitor.weight
+            )
+        except ValueError:
+            return False
+        else:
+            return True
