@@ -6,13 +6,13 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner: any, name: any) -> None:
+    def __set_name__(self, owner: object, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, obj: any, objtype: any = None) -> None:
+    def __get__(self, obj: object, objtype: type[object] = None) -> str:
         return getattr(obj, self.protected_name)
 
-    def __set__(self, obj: any, value: int) -> None:
+    def __set__(self, obj: object, value: int) -> None:
         self.validate(value)
         setattr(obj, self.protected_name, value)
 
@@ -72,5 +72,4 @@ class Slide:
             )
         except ValueError:
             return False
-        else:
-            return True
+        return True
