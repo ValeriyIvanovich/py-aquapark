@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any
+from typing import Any, Type
 
 
 class IntegerRange:
@@ -7,7 +7,7 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __get__(self, instance: Any, owner: Any) -> Any:
+    def __get__(self, instance: Any, owner: type) -> Any:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: Any, value: int) -> Any:
@@ -20,7 +20,7 @@ class IntegerRange:
                 f"and {self.max_amount}")
         setattr(instance, self.protected_name, value)
 
-    def __set_name__(self, owner: Any, name: str) -> None:
+    def __set_name__(self, owner: type, name: str) -> None:
         self.protected_name = "_" + name
 
 
@@ -33,7 +33,10 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
-    pass
+    def __init__(self, age: int, height: int, weight: int) -> None:
+        self.age = age
+        self.weight = weight
+        self.height = height
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
@@ -52,16 +55,14 @@ class Slide:
     def __init__(
         self,
         name: str,
-        limitation_class: SlideLimitationValidator
+        limitation_class: Type[SlideLimitationValidator]
     ) -> None:
         self.name = name
-        self.limitation_class = limitation_class()
+        self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
         try:
-            self.limitation_class.age = visitor.age
-            self.limitation_class.height = visitor.height
-            self.limitation_class.weight = visitor.weight
+            self.limitation_class(visitor.age, visitor.height, visitor.weight)
         except (TypeError, ValueError):
             return False
         return True
