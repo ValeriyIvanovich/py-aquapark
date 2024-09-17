@@ -18,7 +18,7 @@ class IntegerRange:
                 f"Value must be between "
                 f"{self.min_amount} and {self.max_amount}"
             )
-        setattr(instance, self.name, value)
+        instance.__dict__[self.name] = value
 
     def __set_name__(self, owner: any, name: any) -> None:
         self.name = name
@@ -38,48 +38,35 @@ class Visitor:
 
 class SlideLimitationValidator(ABC):
     def __init__(self,
-                 age_range: IntegerRange,
-                 weight_range: IntegerRange,
-                 height_range: IntegerRange) -> None:
-        self.age_range = age_range
-        self.weight_range = weight_range
-        self.height_range = height_range
+                 age: int,
+                 weight: int,
+                 height: int
+                 ) -> None:
+        self.age = age
+        self.weight = weight
+        self.height = height
 
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
-    def __init__(self) -> None:
-        super().__init__(
-            age_range=IntegerRange(4, 14),
-            weight_range=IntegerRange(20, 50),
-            height_range=IntegerRange(80, 120)
-        )
+    age = IntegerRange(4, 14)
+    weight = IntegerRange(20, 50)
+    height = IntegerRange(80, 120)
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
-    def __init__(self) -> None:
-        super().__init__(
-            age_range=IntegerRange(14, 60),
-            weight_range=IntegerRange(50, 120),
-            height_range=IntegerRange(120, 220)
-        )
+    age = IntegerRange(14, 60)
+    weight = IntegerRange(50, 120)
+    height = IntegerRange(120, 220)
 
 
 class Slide:
     def __init__(self, name: str, limitation_class: type) -> None:
         self.name = name
-        self.limitation_class = limitation_class()
+        self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
         try:
-            return (
-                self.limitation_class.age_range.min_amount
-                <= visitor.age <= self.limitation_class.age_range.max_amount
-                and self.limitation_class.weight_range.min_amount
-                <= visitor.weight
-                <= self.limitation_class.weight_range.max_amount
-                and self.limitation_class.height_range.min_amount
-                <= visitor.height
-                <= self.limitation_class.height_range.max_amount
-            )
-        except Exception as e:
-            print(e)
+            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+            return True
+        except ValueError:
+            return False
