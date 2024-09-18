@@ -18,10 +18,10 @@ class IntegerRange:
                 f"Value must be between "
                 f"{self.min_amount} and {self.max_amount}"
             )
-        instance.__dict__[self.name] = value
+        setattr(instance, self.name, value)
 
     def __set_name__(self, owner: any, name: any) -> None:
-        self.name = name
+        self.name = f"_{name}"
 
 
 class Visitor:
