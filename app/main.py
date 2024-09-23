@@ -20,7 +20,7 @@ class IntegerRange:
 
     def __set__(self, instance: SlideLimitationValidator, value: int) -> None:
         if value not in range(self.min_amount, self.max_amount + 1):
-            raise ValueError
+            raise ValueError("Sorry the visitor can't use the slide")
         setattr(instance, self.name, value)
 
 
