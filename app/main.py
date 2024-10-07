@@ -64,10 +64,15 @@ class Slide:
             return False
         validate_instance = self.limitation_class()
 
-        validate_instance.age = visitor.age
-        validate_instance.height = visitor.height
-        validate_instance.weight = visitor.weight
+        try:
+            validate_instance.age = visitor.age
+            validate_instance.height = visitor.height
+            validate_instance.weight = visitor.weight
+        except TypeError:
+            print(f"Incorrect values for visitor {visitor.name}")
+            return False
+        except ValueError:
+            print(f"The visitor {visitor.name} can't use the slide")
+            return False
 
-        return bool(validate_instance.age
-                    and validate_instance.height
-                    and validate_instance.weight)
+        return True
