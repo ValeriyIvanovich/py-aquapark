@@ -6,11 +6,11 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner: object, name: str) -> None:
+    def __set_name__(self, owner: type, name: str) -> None:
         self.public_name = name
         self.protected_name = "_" + name
 
-    def __get__(self, instance: object, owner: object) -> None:
+    def __get__(self, instance: object, owner: type) -> None:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: object, value: int) -> None:
@@ -19,8 +19,8 @@ class IntegerRange:
                             f"should be integer")
         if not self.min_amount <= value <= self.max_amount:
             raise ValueError(f"{self.public_name.capitalize()} should be "
-                             f"greater than {self.min_amount} "
-                             f"and less than {self.max_amount}")
+                             f"greater than {self.min_amount - 1} "
+                             f"and less than {self.max_amount + 1}")
         setattr(instance, self.protected_name, value)
 
 
