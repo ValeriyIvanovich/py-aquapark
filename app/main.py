@@ -10,7 +10,7 @@ class IntegerRange:
         self.public_name = name
         self.protected_name = "_" + name
 
-    def __get__(self, instance: object, owner: type) -> None:
+    def __get__(self, instance: object, owner: type) -> int:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: object, value: int) -> None:
@@ -58,7 +58,7 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 class Slide:
     def __init__(self,
                  name: str,
-                 limitation_class: type(SlideLimitationValidator)) -> None:
+                 limitation_class: SlideLimitationValidator) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
