@@ -1,4 +1,3 @@
-from abc import ABC
 from typing import Any
 
 
@@ -32,7 +31,7 @@ class Visitor:
         self.weight = weight
 
 
-class SlideLimitationValidator(ABC):
+class SlideLimitationValidator:
     def __init__(self, age: int, height: int, weight: int) -> None:
         self.age = age
         self.height = height
@@ -54,15 +53,18 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 class Slide:
     def __init__(
             self, name: str,
-            limitation_class: SlideLimitationValidator
+            limitation_class: type(SlideLimitationValidator)
     ) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
         try:
-            self.limitation_class(visitor.age, visitor.height, visitor.weight)
+            self.limitation_class(
+                age=visitor.age,
+                height=visitor.height,
+                weight=visitor.weight
+            )
+            return True
         except (TypeError, ValueError):
             return False
-        else:
-            return True
