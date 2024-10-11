@@ -18,9 +18,9 @@ class IntegerRange:
 
     def __set__(self, instance: "Visitor", value: int) -> None:
         if not isinstance(value, int):
-            raise TypeError()
+            raise TypeError("Expected an integer value")
         if not (self.min_amount <= value <= self.max_amount):
-            raise ValueError()
+            raise ValueError("Value out of the allowed range")
         setattr(instance, self.protected_name, value)
 
 
@@ -61,7 +61,7 @@ class Slide:
     def can_access(self, visitor: Visitor) -> bool:
         try:
             self.limitation_class(visitor.age, visitor.weight, visitor.height)
-        except ValueError or TypeError:
+        except (ValueError, TypeError):
             return False
         else:
             return True
