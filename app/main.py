@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class IntegerRange:
@@ -12,7 +12,9 @@ class IntegerRange:
     def __get__(self, instance: object, owner: object) -> str:
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance: object, value: int | str) -> None:
+    def __set__(self, instance: object, value: int) -> None:
+        if not isinstance(value, int):
+            raise TypeError(f"{self.protected_name} must be integer!")
         if not self.min_value <= value <= self.max_value:
             raise ValueError(f"Value must be in range from "
                              f"{self.min_value} to {self.max_value}")
@@ -33,27 +35,17 @@ class SlideLimitationValidator(ABC):
         self.weight = weight
         self.height = height
 
-    @abstractmethod
-    def validator(self) -> None:
-        pass
-
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
-    def validator(self) -> bool:
-        if (4 <= self.age <= 14
-                and 80 <= self.height <= 120
-                and 20 <= self.weight <= 50):
-            return True
-        return False
+    age = IntegerRange(4, 14)
+    height = IntegerRange(80, 120)
+    weight = IntegerRange(20, 50)
 
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
-    def validator(self) -> bool:
-        if (14 <= self.age <= 60
-                and 120 <= self.height <= 220
-                and 50 <= self.weight <= 120):
-            return True
-        return False
+    age = IntegerRange(14, 60)
+    height = IntegerRange(120, 220)
+    weight = IntegerRange(50, 120)
 
 
 class Slide:
@@ -62,7 +54,8 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
-        validator = self.limitation_class(visitor.age,
-                                          visitor.weight,
-                                          visitor.height)
-        return validator.validator()
+        try:
+            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+        except (ValueError, TypeError):
+            return False
+        return True
