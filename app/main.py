@@ -7,18 +7,18 @@ class IntegerRange:
         self.max_value = max_value
 
     def __set_name__(self, instance: object, name: str) -> None:
-        self.protected_name = f"_{name}"
+        self.private_name = f"_{name}"
 
     def __get__(self, instance: object, owner: object) -> str:
-        return getattr(instance, self.protected_name)
+        return getattr(instance, self.private_name)
 
     def __set__(self, instance: object, value: int) -> None:
         if not isinstance(value, int):
-            raise TypeError(f"{self.protected_name} must be integer!")
+            raise TypeError(f"{self.private_name} must be integer!")
         if not self.min_value <= value <= self.max_value:
             raise ValueError(f"Value must be in range from "
                              f"{self.min_value} to {self.max_value}")
-        setattr(instance, self.protected_name, value)
+        setattr(instance, self.private_name, value)
 
 
 class Visitor:
