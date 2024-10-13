@@ -14,7 +14,10 @@ class IntegerRange:
 
     def __set__(self, instance: any, value: int) -> None:
         if not self.min_amount <= value <= self.max_amount:
-            raise ValueError
+            raise ValueError(
+                f"The value must be in the range "
+                f"{self.min_amount} to {self.max_amount}"
+            )
         setattr(instance, self.protected_name, value)
 
 
