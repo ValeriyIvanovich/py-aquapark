@@ -8,13 +8,13 @@ class IntegerRange:
         self.min_value = min_value
         self.max_value = max_value
 
-    def __set_name__(self, instance: object, name: str) -> None:
+    def __set_name__(self, instance: type, name: str) -> None:
         self.private_name = f"_{name}"
 
-    def __get__(self, instance: object, owner: object) -> str:
+    def __get__(self, instance: type, owner: type) -> str:
         return getattr(instance, self.private_name)
 
-    def __set__(self, instance: object, value: int) -> None:
+    def __set__(self, instance: type, value: int) -> None:
         if not isinstance(value, int):
             raise TypeError(f"{self.private_name} must be integer!")
         if not self.min_value <= value <= self.max_value:
