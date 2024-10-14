@@ -19,7 +19,7 @@ class IntegerRange:
         if not (self.min_amount <= value <= self.max_amount):
             raise ValueError(f"{value} should be between "
                              f"{self.min_amount} and "
-                             f"git {self.max_amount}.")
+                             f"git {self.max_amount}!")
         setattr(instance, self.protected_name, value)
 
 
