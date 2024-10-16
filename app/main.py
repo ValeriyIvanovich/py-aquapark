@@ -30,8 +30,9 @@ class IntegerRange:
             instance: SlideLimitationValidator,
             value: int
     ) -> None:
-        if self.min_amount <= value <= self.max_amount:
-            setattr(instance, self.protected_name, value)
+        if not self.min_amount <= value <= self.max_amount:
+            setattr(instance, self.protected_name, False)
+            return
 
 
 class Visitor:
@@ -52,6 +53,11 @@ class SlideLimitationValidator(ABC):
         self.age = age
         self.weight = weight
         self.height = height
+
+    def checking(self) -> bool:
+        if False in self.__dict__.values():
+            return False
+        return True
 
 
 class ChildrenSlideLimitationValidator(
@@ -86,11 +92,8 @@ class Slide:
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> Visitor | None:
-        result = (self.limitation_class(
+        return self.limitation_class(
             visitor.age,
             visitor.weight,
             visitor.height
-        ))
-        if len(result.__dict__) == 3:
-            return True
-        return False
+        ).checking()
